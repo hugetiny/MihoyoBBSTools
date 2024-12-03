@@ -17,10 +17,6 @@ from loghelper import log
 
 
 def main():
-    # 拒绝在GitHub Action运行
-    if os.getenv('GITHUB_ACTIONS') == 'true':
-        print("请不要在GitHub Action运行本项目")
-        exit(0)
     # 初始化，加载配置
     config.load_config()
     if not config.config["enable"]:
