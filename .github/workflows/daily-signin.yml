@@ -1,0 +1,33 @@
+name: Daily Sign-in
+
+on:
+  schedule:
+    - cron: '0 1 * * *'  # 每天UTC 1:00 (北京时间 9:00)
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  signin:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        
+    - name: Update cookie
+      run: |
+        sed -i "s/cookie: .*/cookie: ${{ secrets.COOKIE }}/" config/config.yaml
+      
+    - name: Run sign-in script
+      run: |
+        python main.py
+      env:
+        TZ: Asia/Shanghai
