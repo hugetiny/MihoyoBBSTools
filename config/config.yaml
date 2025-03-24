@@ -1,86 +1,61 @@
-#这里控制整个config文件是否启用
 enable: true
-#config的版本
-version: 12
-# todo功能
-push: ""
+version: 14
+push: ''
 account:
-  #登入账号只需要修改cookie就行了
-  cookie: ""
-  stuid: ""
-  stoken: ""
-  mid: ""
+  cookie: ''
+  stuid: ''
+  stoken: ''
+  mid: ''
 device:
-  name: "iPhone 6s Plus"
-  model: "iPhone8,2"
-  # 此处脚本随机生成
-  id: ""
+  name: Xiaomi MI 6
+  model: Mi 6
+  id: ''
+  fp: ''
 mihoyobbs:
-  #控制bbs功能是否启用
   enable: false
-  #社区签到
-  checkin: true
-  #签到的社区列表 详情可以看config文件夹下面的readme
+  checkin: false
   checkin_list:
-    - 5
-    - 2
-  #看帖
-  read: true
-  #点赞帖子
-  like: true
-  #取消点赞
-  cancel_like: true
-  #分享帖子
-  share: true
-# 游戏签到
+  - 5
+  - 2
+  read: false
+  like: false
+  cancel_like: false
+  share: false
 games:
-  #国服控制区域
   cn:
-    #控制是否启用国内签到
     enable: true
-    #配置签到用的ua 脚本会在后面自动加上miHoYoBBS/版本号 ,请复制的时候不要带miHoYoBBS/版本
-    useragent: "Mozilla/5.0 (iPhone; CPU iPhone OS 15_8_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
-    #重试次数
-    retries: 2
-    #原神
+    useragent: Mozilla/5.0 (Linux; Android 12; Unspecified Device) AppleWebKit/537.36
+      (KHTML, like Gecko) Version/4.0 Chrome/103.0.5060.129 Mobile Safari/537.36
+    retries: 3
     genshin:
-      #控制是否启用签到，下面一致
       checkin: true
-      #这里是不签到的账号，填入文本型数据 示例["114514","1919810"](也许你这边是和checkin_list那块一样)，下面一致
       black_list: []
-    #崩坏2
+      auto_checkin: false
     honkai2:
       checkin: false
       black_list: []
-    #崩坏3
     honkai3rd:
       checkin: false
       black_list: []
-    #未定事件簿
     tears_of_themis:
       checkin: false
       black_list: []
-    # 崩坏: 星穹铁道
     honkai_sr:
       checkin: true
       black_list: []
-    #绝区零
     zzz:
       checkin: true
       black_list: []
-  #国际服控制区域
   os:
     enable: false
-    # 国际服专用Cookie填写
-    cookie: ""
-    # 国际服语言
-    lang: "zh-cn"
+    cookie: ''
+    lang: zh-cn
     genshin:
       checkin: false
       black_list: []
     honkai3rd:
       checkin: false
-      black_list: [ ]
+      black_list: []
     tears_of_themis:
       checkin: false
       black_list: []
@@ -90,23 +65,21 @@ games:
     zzz:
       checkin: false
       black_list: []
-#云游戏专区
 cloud_games:
-  # 控制整个云游戏的签到
   cn:
     enable: false
-    #云原神
     genshin:
-      #开启签到
       enable: false
-      #这里填入抓包获得的token，支持多个
-      token: ""
+      token: ''
+    zzz:
+      enable: false
+      token: ''
   os:
-    lang: "zh-cn"
+    lang: zh-cn
     enable: false
     genshin:
       enable: false
-      token: ""
+      token: ''
 competition:
   enable: false
   genius_invokation:

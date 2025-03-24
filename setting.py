@@ -29,7 +29,7 @@ game_id2name = {
     "bh3_cn": "崩坏3",
     "nxx_cn": "未定事件簿",
     "hk4e_cn": "原神",
-    "hkrpg_cn": "崩坏： 星穹铁道",
+    "hkrpg_cn": "崩坏：星穹铁道",
     "nap_cn": "绝区零"
 }
 
@@ -72,7 +72,7 @@ get_token_by_stoken = f"{passport_api}/account/ma-cn-session/app/getTokenBySToke
 bbs_account_info = "https://webapi.account.mihoyo.com/Api/cookie_accountinfo_by_loginticket"
 bbs_get_multi_token_by_login_ticket = f"{web_api}/auth/api/getMultiTokenByLoginTicket"
 bbs_get_cookie_token_by_stoken = f"{web_api}/auth/api/getCookieAccountInfoBySToken"
-bbs_tasks_list = f"{bbs_api}/apihub/sapi/getUserMissionsState"  # 获取任务列表
+bbs_tasks_list = f"{bbs_api}/apihub/wapi/getUserMissionsState"  # 获取任务列表
 bbs_sign_url = f"{bbs_api}/apihub/app/api/signIn"  # post
 bbs_post_list_url = f"{bbs_api}/post/api/getForumPostList"
 bbs_detail_url = f"{bbs_api}/post/api/getPostFull"
@@ -125,6 +125,10 @@ zzz_act_id = "e202406242138391"
 # 云原神相关api
 cloud_genshin_api = "https://api-cloudgame.mihoyo.com"
 cloud_genshin_sgin = f"{cloud_genshin_api}/hk4e_cg_cn/wallet/wallet/get"
+
+# 云绝区零相关api
+cloud_zzz_api = "https://cg-nap-api.mihoyo.com"
+cloud_zzz_sgin = f"{cloud_zzz_api}/nap_cn/cg/wallet/wallet/get"
 
 # 接下来是国际服的内容
 os_referer_url = "https://act.hoyolab.com/"

@@ -27,6 +27,7 @@ jobs:
     - name: Update cookie
       run: |
         sed -i "s/cookie: .*/cookie: ${{ secrets.COOKIE }}/" config/config.yaml
+        sed -i "s/stoken: .*/stoken: ${{ secrets.STOKEN }}/" config/config.yaml
       
     - name: Run sign-in script
       run: |

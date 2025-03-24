@@ -3,7 +3,6 @@ import os
 import yaml
 from copy import deepcopy
 
-import tools
 from loghelper import log
 
 # 这个字段现在还没找好塞什么地方好，就先塞config这里了
@@ -12,9 +11,9 @@ serverless = False
 update_config_need = False
 
 config = {
-    'enable': True, 'version': 12, "push": "",
+    'enable': True, 'version': 14, "push": "",
     'account': {'cookie': '', 'stuid': '', 'stoken': '', 'mid': ''},
-    'device': {'name': 'Xiaomi MI 6', 'model': 'Mi 6', 'id': ''},
+    'device': {'name': 'Xiaomi MI 6', 'model': 'Mi 6', 'id': '', 'fp': ''},
     'mihoyobbs': {
         'enable': True, 'checkin': True, 'checkin_list': [5, 2],
         'read': True, 'like': True, 'cancel_like': True, 'share': True
@@ -44,7 +43,8 @@ config = {
     'cloud_games': {
         "cn": {
             "enable": False,
-            "genshin": {'enable': False, 'token': ""}
+            "genshin": {'enable': False, 'token': ""},
+            "zzz": {'enable': False, 'token': ""}
         },
         "os": {
             "enable": False, 'lang': 'zh-cn',
@@ -72,56 +72,6 @@ def copy_config():
     return config_raw
 
 
-def config_v9_update(data: dict):
-    global update_config_need
-    update_config_need = True
-    data['version'] = 9
-    data['games']['os'] = {
-        'enable': False, 'cookie': '',
-        'genshin': {'auto_checkin': False, 'black_list': []},
-        'honkai_sr': {'auto_checkin': False, 'black_list': []}
-    }
-    log.info("config已升级到: 9")
-    return data
-
-
-def config_v9_update_to_v12(data: dict):
-    global update_config_need
-    update_config_need = True
-    base_config = deepcopy(config_raw)
-
-    base_config["enable"] = data["enable"]
-    base_config['account'].update({key: value for key, value in data['account'].items()
-                                   if key in base_config['account'].keys()})
-    base_config['device']['id'] = tools.get_device_id(data['account']['cookie'])
-
-    base_config['mihoyobbs'].update({
-        'enable': data['mihoyobbs']['enable'],
-        'checkin': data['mihoyobbs']['checkin'],
-        'read': data['mihoyobbs']['read_posts'],
-        'like': data['mihoyobbs']['like_posts'],
-        'cancel_like': data['mihoyobbs']['cancel_like_posts'],
-        'share': data['mihoyobbs']['share_post']
-    })
-    if data['mihoyobbs']['checkin_multi']:
-        base_config['mihoyobbs']['checkin_list'] = data['mihoyobbs']['checkin_multi_list']
-    else:
-        base_config['mihoyobbs']['checkin_list'] = [5]
-
-    for region, region_data in data['games'].items():
-        region_config = base_config['games'][region]
-        for item, item_data in region_data.items():
-            if item not in ['enable', 'useragent', 'cookie', 'lang']:
-                region_config[item] = {'checkin': item_data['auto_checkin'], 'black_list': item_data['black_list']}
-            else:
-                region_config[item] = item_data
-    base_config['cloud_games']['cn']['enable'] = data['cloud_games']['genshin']['enable']
-    base_config['cloud_games']['cn']['genshin']['enable'] = data['cloud_games']['genshin']['enable']
-    base_config['cloud_games']['cn']['genshin']['token'] = data['cloud_games']['genshin']['token']
-    log.info("config已升级到: 12")
-    return base_config
-
-
 def config_v10_update(data: dict):
     global update_config_need
     update_config_need = True
@@ -131,14 +81,14 @@ def config_v10_update(data: dict):
     new_keys = ['enable', 'account', 'checkin', 'weekly']
     data['competition']['genius_invokation'] = dict(collections.OrderedDict(
         (key, genius.get(key, False) if key != 'account' else []) for key in new_keys))
-    log.info("config已升级到: 11")
+    log.info("config 已升级到：11")
     return data
 
 
 def config_v11_update(data: dict):
     global update_config_need
     update_config_need = True
-    data['version'] = 12
+    data['version'] = 13
     new_config = {}
     for key in data:
         if key == "account":
@@ -150,7 +100,29 @@ def config_v11_update(data: dict):
     new_config['cloud_games']['cn']['enable'] = data['cloud_games']['genshin']['enable']
     new_config['cloud_games']['cn']['genshin']['enable'] = data['cloud_games']['genshin']['enable']
     new_config['cloud_games']['cn']['genshin']['token'] = data['cloud_games']['genshin']['token']
-    log.info("config已升级到: 12")
+    log.info("config 已升级到：13")
+    return new_config
+
+
+def config_v12_update(data: dict):
+    global update_config_need
+    update_config_need = True
+    data['version'] = 13
+    data['cloud_games']['cn']['zzz'] = {'enable': False, 'token': ""}
+    log.info("config 已升级到: 13")
+    return data
+
+
+def config_v13_update(data: dict):
+    global update_config_need
+    update_config_need = True
+    new_config = deepcopy(data)
+
+    # 确保版本号更新为14
+    new_config['version'] = 14
+    new_config['device']['fp'] = config['device'].get('fp', '')
+
+    log.info("config 已升级到：14")
     return new_config
 
 
@@ -161,19 +133,19 @@ def load_config(p_path=None):
     with open(p_path, "r", encoding='utf-8') as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
     if data['version'] != config_raw['version']:
-        if data['version'] == 8:
-            data = config_v9_update(data)
-        if data['version'] == 9:
-            data = config_v9_update_to_v12(data)
         if data['version'] == 10:
             data = config_v10_update(data)
         if data['version'] == 11:
             data = config_v11_update(data)
+        if data['version'] == 12:
+            data = config_v12_update(data)
+        if data['version'] == 13:
+            data = config_v13_update(data)
         save_config(p_config=data)
     # 去除cookie最末尾的空格
     data["account"]["cookie"] = str(data["account"]["cookie"]).rstrip(' ')
     config = data
-    log.info("Config加载完毕")
+    log.info("Config 加载完毕")
     return data
 
 
@@ -194,9 +166,9 @@ def save_config(p_path=None, p_config=None):
             f.flush()
         except OSError:
             serverless = True
-            log.info("Cookie保存失败")
+            log.info("Cookie 保存失败")
         else:
-            log.info("Config保存完毕")
+            log.info("Config 保存完毕")
 
 
 def clear_stoken():
@@ -207,7 +179,7 @@ def clear_stoken():
     config["account"]["mid"] = ""
     config["account"]["stuid"] = ""
     config["account"]["stoken"] = "StokenError"
-    log.info("Stoken已删除")
+    log.info("Stoken 已删除")
     save_config()
 
 
@@ -217,7 +189,7 @@ def clear_cookie():
         log.info("云函数执行，无法保存")
         return None
     config["account"]["cookie"] = "CookieError"
-    log.info(f"Cookie已删除")
+    log.info(f"Cookie 已删除")
     save_config()
 
 
@@ -227,18 +199,40 @@ def disable_games(region: str = "cn"):
         log.info("云函数执行，无法保存")
         return None
     config['games'][region]['enable'] = False
-    log.info(f"游戏签到({region})已关闭")
+    log.info(f"游戏签到（{region}）已关闭")
     save_config()
 
 
-def clear_cookie_cloudgame():
+def clear_cookie_cloudgame_genshin():
     global config
     if serverless:
         log.info("云函数执行，无法保存")
         return None
-    config['cloud_games']['genshin']["enable"] = False
-    config['cloud_games']['genshin']['token'] = ""
-    log.info("云原神Cookie删除完毕")
+    config['cloud_games']['cn']['genshin']["enable"] = False
+    config['cloud_games']['cn']['genshin']['token'] = ""
+    log.info("国服云原神 Cookie 删除完毕")
+    save_config()
+
+
+def clear_cookie_cloudgame_genshin_os():
+    global config
+    if serverless:
+        log.info("云函数执行，无法保存")
+        return None
+    config['cloud_games']['os']['genshin']["enable"] = False
+    config['cloud_games']['os']['genshin']['token'] = ""
+    log.info("国际服云原神 Cookie 删除完毕")
+    save_config()
+
+
+def clear_cookie_cloudgame_zzz():
+    global config
+    if serverless:
+        log.info("云函数执行，无法保存")
+        return None
+    config['cloud_games']['cn']['zzz']["enable"] = False
+    config['cloud_games']['cn']['zzz']['token'] = ""
+    log.info("国服云绝区零 Cookie 删除完毕")
     save_config()
 
 
