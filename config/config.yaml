@@ -12,15 +12,15 @@ device:
   id: ''
   fp: ''
 mihoyobbs:
-  enable: false
-  checkin: false
+  enable: true
+  checkin: true
   checkin_list:
   - 5
   - 2
-  read: false
-  like: false
-  cancel_like: false
-  share: false
+  read: true
+  like: true
+  cancel_like: true
+  share: true
 games:
   cn:
     enable: true
