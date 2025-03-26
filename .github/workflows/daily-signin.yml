@@ -26,15 +26,7 @@ jobs:
         
     - name: Update cookie
       run: |
-        python -c '''
-        import yaml
-        with open('config/config.yaml', 'r', encoding='utf-8') as f:
-            config = yaml.safe_load(f)
-        config['account']['cookie'] = """${{ secrets.COOKIE }}"""
-        config['account']['stoken'] = """${{ secrets.STOKEN }}"""
-        with open('config/config.yaml', 'w', encoding='utf-8') as f:
-            yaml.dump(config, f, allow_unicode=True)
-        '''
+        python -c "import yaml; f=open('config/config.yaml','r',encoding='utf-8'); config=yaml.safe_load(f); f.close(); config['account']['cookie']='''${{ secrets.COOKIE }}'''; config['account']['stoken']='''${{ secrets.STOKEN }}'''; f=open('config/config.yaml','w',encoding='utf-8'); yaml.dump(config,f,allow_unicode=True); f.close()"
       
     - name: Run sign-in script
       run: |
