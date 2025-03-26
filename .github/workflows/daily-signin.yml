@@ -26,8 +26,15 @@ jobs:
         
     - name: Update cookie
       run: |
-        sed -i "s/cookie: .*/cookie: ${{ secrets.COOKIE }}/" config/config.yaml
-        sed -i "s/stoken: .*/stoken: ${{ secrets.STOKEN }}/" config/config.yaml
+        python -c "
+        import yaml
+        with open('config/config.yaml', 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+        config['account']['cookie'] = '${{ secrets.COOKIE }}'
+        config['account']['stoken'] = '${{ secrets.STOKEN }}'
+        with open('config/config.yaml', 'w', encoding='utf-8') as f:
+            yaml.dump(config, f, allow_unicode=True)
+        "
       
     - name: Run sign-in script
       run: |
