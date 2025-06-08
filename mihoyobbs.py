@@ -43,7 +43,7 @@ class Mihoyobbs:
             "Host": "bbs-api.miyoushe.com",
             "Connection": "Keep-Alive",
             "Accept-Encoding": "gzip",
-            "User-Agent": "okhttp/4.9.3"
+            "User-Agent": f"miHoYoBBS/{setting.mihoyobbs_version}"
         }
         self.task_header = {
             'Accept': 'application/json, text/plain, */*',
@@ -183,8 +183,8 @@ class Mihoyobbs:
                     break
                 elif data["retcode"] == -100:
                     log.error("签到失败，你的 cookie 可能已过期，请重新设置 cookie。")
-                    config.clear_stoken()
-                    raise StokenError('Stoken expires')
+                    config.clear_cookie()
+                    raise StokenError('Cookie expires')
                 else:
                     log.error(f'未知错误：{req.text}')
             if challenge is not None:

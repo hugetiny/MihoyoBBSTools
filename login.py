@@ -90,7 +90,10 @@ def get_cookie_token_by_stoken():
                     headers=header).json()
     if data.get("retcode", -1) != 0:
         log.error("stoken 已失效，请重新抓取 cookie")
-        config.clear_stoken()
+        # 如果Stoken来自环境变量，不要清除，只记录错误
+        import os
+        if not os.getenv("MIHOYO_STOKEN"):
+            config.clear_stoken()
         raise StokenError('Stoken expires')
     return data["data"]["cookie_token"]
 
@@ -151,7 +154,10 @@ def update_stoken_v2():
         log.info("升级 stoken 成功")
     elif data["retcode"] == -100:
         log.error("stoken 已失效，请重新抓取 cookie")
-        config.clear_stoken()
+        # 如果Stoken来自环境变量，不要清除，只记录错误
+        import os
+        if not os.getenv("MIHOYO_STOKEN"):
+            config.clear_stoken()
         raise StokenError('Stoken expires')
     else:
         log.error("其他异常")

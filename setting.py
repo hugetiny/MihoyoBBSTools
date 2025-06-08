@@ -10,7 +10,7 @@ mihoyobbs_verify_key = "bll8iq97cem8"
 # 米游社的版本
 mihoyobbs_version = "2.78.1"  # Salt和Version相互对应
 # 米游社的客户端类型
-mihoyobbs_Client_type = "1"  # 1为ios 2为安卓
+mihoyobbs_Client_type = "2"  # 1为ios 2为安卓
 mihoyobbs_Client_type_web = "5"  # 4为pc web 5为mobile web
 
 # 米游社的分区列表

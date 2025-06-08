@@ -9,6 +9,8 @@ from loghelper import log
 serverless = False
 # 提示需要更新config版本
 update_config_need = False
+# 防止重复加载环境变量
+env_loaded = False
 
 config = {
     'enable': True, 'version': 14, "push": "",
@@ -126,12 +128,71 @@ def config_v13_update(data: dict):
     return new_config
 
 
+def load_dotenv():
+    """简单的.env文件加载器"""
+    global env_loaded
+    if env_loaded:
+        return True
+        
+    env_path = os.path.join(os.path.dirname(__file__), '.env')
+    if os.path.exists(env_path):
+        try:
+            with open(env_path, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith('#') and '=' in line:
+                        key, value = line.split('=', 1)
+                        os.environ[key.strip()] = value.strip().strip('"\'')
+            log.info("已从.env文件加载环境变量")
+            env_loaded = True
+            return True
+        except Exception as e:
+            log.warning(f"加载.env文件失败: {e}")
+    return False
+
+
 def load_config(p_path=None):
-    global config
+    global config, serverless, env_loaded
     if not p_path:
         p_path = config_Path
+    
+    # 尝试加载.env文件 (只在第一次加载时)
+    if not env_loaded:
+        load_dotenv()
+    
+    # 检查是否为CI环境
+    is_ci = os.getenv("CI") == "true" or os.getenv("GITHUB_ACTIONS") == "true"
+    if is_ci:
+        serverless = True
+        if not env_loaded:  # 只在第一次时输出
+            log.info("检测到CI环境，启用无状态模式")
+    
     with open(p_path, "r", encoding='utf-8') as f:
         data = yaml.load(f, Loader=yaml.FullLoader)
+    
+    # 从环境变量覆盖账号信息 (只在第一次时输出日志)
+    env_cookie = os.getenv("MIHOYO_COOKIE")
+    env_stuid = os.getenv("MIHOYO_STUID")
+    env_stoken = os.getenv("MIHOYO_STOKEN")
+    env_mid = os.getenv("MIHOYO_MID")
+    
+    if env_cookie:
+        data['account']['cookie'] = env_cookie
+        if not env_loaded:
+            log.info("已从环境变量加载 Cookie")
+    if env_stuid:
+        data['account']['stuid'] = env_stuid
+        if not env_loaded:
+            log.info("已从环境变量加载 STUID")
+    if env_stoken:
+        data['account']['stoken'] = env_stoken
+        if not env_loaded:
+            log.info("已从环境变量加载 Stoken")
+    if env_mid:
+        data['account']['mid'] = env_mid
+        if not env_loaded:
+            log.info("已从环境变量加载 MID")
+    
     if data['version'] != config_raw['version']:
         if data['version'] == 10:
             data = config_v10_update(data)
@@ -144,8 +205,18 @@ def load_config(p_path=None):
         save_config(p_config=data)
     # 去除cookie最末尾的空格
     data["account"]["cookie"] = str(data["account"]["cookie"]).rstrip(' ')
+    
+    # 自动生成设备ID
+    if data["device"]["id"] == "" or data["device"]["id"] == "auto-generate":
+        import tools
+        data["device"]["id"] = tools.get_device_id(data["account"]["cookie"])
+        if not env_loaded:
+            log.info(f"自动生成设备ID: {data['device']['id']}")
+    
     config = data
-    log.info("Config 加载完毕")
+    if not env_loaded:
+        log.info("Config 加载完毕")
+        env_loaded = True  # 标记已完成首次加载
     return data
 
 
@@ -158,11 +229,25 @@ def save_config(p_path=None, p_config=None):
         p_path = config_Path
     if not p_config:
         p_config = config
+    
+    # 创建一个副本，移除来自环境变量的敏感信息
+    clean_config = deepcopy(p_config)
+    
+    # 如果有环境变量，说明敏感信息来自环境变量，不应保存到文件
+    if os.getenv("MIHOYO_COOKIE"):
+        clean_config["account"]["cookie"] = ""
+    if os.getenv("MIHOYO_STOKEN"):
+        clean_config["account"]["stoken"] = ""
+    if os.getenv("MIHOYO_STUID"):
+        clean_config["account"]["stuid"] = ""
+    if os.getenv("MIHOYO_MID"):
+        clean_config["account"]["mid"] = ""
+    
     with open(p_path, "w+") as f:
         try:
             f.seek(0)
             f.truncate()
-            f.write(yaml.dump(p_config, Dumper=yaml.Dumper, sort_keys=False))
+            f.write(yaml.dump(clean_config, Dumper=yaml.Dumper, sort_keys=False))
             f.flush()
         except OSError:
             serverless = True

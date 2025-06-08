@@ -24,12 +24,16 @@ jobs:
       run: |
         pip install -r requirements.txt
         
-    - name: Update cookie
-      run: |
-        python -c "import yaml; f=open('config/config.yaml','r',encoding='utf-8'); config=yaml.safe_load(f); f.close(); config['account']['cookie']='''${{ secrets.COOKIE }}'''; config['account']['stoken']='''${{ secrets.STOKEN }}'''; f=open('config/config.yaml','w',encoding='utf-8'); yaml.dump(config,f,allow_unicode=True); f.close()"
-      
     - name: Run sign-in script
       run: |
         python main.py
       env:
         TZ: Asia/Shanghai
+        # 米游社账号信息
+        MIHOYO_COOKIE: ${{ secrets.COOKIE }}
+        MIHOYO_STOKEN: ${{ secrets.STOKEN }}
+        MIHOYO_STUID: ${{ secrets.STUID }}
+        MIHOYO_MID: ${{ secrets.MID }}
+        # CI环境标识
+        CI: true
+        GITHUB_ACTIONS: true
