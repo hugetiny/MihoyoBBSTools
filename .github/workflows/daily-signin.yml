@@ -28,7 +28,7 @@ jobs:
       run: |
         python main.py
       env:
-        TZ: Asia/Shanghai
+        TZ: Asia/Hongkong
         # 米游社账号信息
         MIHOYO_COOKIE: ${{ secrets.COOKIE }}
         MIHOYO_STOKEN: ${{ secrets.STOKEN }}
@@ -37,3 +37,6 @@ jobs:
         # CI环境标识
         CI: true
         GITHUB_ACTIONS: true
+        # 优化环境变量
+        PYTHONUNBUFFERED: 1
+        PYTHONDONTWRITEBYTECODE: 1

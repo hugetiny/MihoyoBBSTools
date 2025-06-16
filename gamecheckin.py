@@ -129,7 +129,7 @@ class GameCheckin:
             if account[1] in config.config["games"]["cn"][self.game_mid]["black_list"]:
                 continue
             log.info(f"正在为{self.player_name}「{account[0]}」进行签到...")
-            time.sleep(random.randint(2, 8))
+            time.sleep(random.randint(1, 2))
             is_data = self.is_sign(region=account[2], uid=account[1])
             if is_data.get("first_bind", False):
                 log.warning(f"{self.player_name}「{account[0]}」是第一次绑定米游社，请先手动签到一次")
@@ -140,7 +140,7 @@ class GameCheckin:
                          f"励是{tools.get_item(self.checkin_rewards[sign_days])}")
                 sign_days += 1
             else:
-                time.sleep(random.randint(2, 8))
+                time.sleep(random.randint(1, 2))
                 req = self.check_in(account)
                 if req.status_code != 429:
                     data = req.json()
@@ -224,7 +224,7 @@ class ZZZ(GameCheckin):
 def checkin_game(game_name, game_module, game_print_name=""):
     game_config = config.config["games"]["cn"][game_name]
     if game_config["checkin"]:
-        time.sleep(random.randint(2, 8))
+        time.sleep(random.randint(1, 2))
         if game_print_name == "":
             game_print_name = game_name
         log.info(f"正在进行「{game_print_name}」签到")

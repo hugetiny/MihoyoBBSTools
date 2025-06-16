@@ -14,7 +14,7 @@ from request import http
 
 
 def wait():
-    time.sleep(random.randint(2, 8))
+    time.sleep(random.randint(1, 2))
 
 
 class Mihoyobbs:

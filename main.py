@@ -28,7 +28,7 @@ def main():
         # 登入，如果没开启bbs全局没打开就无需进行登入操作 (实际上也可以登录)
         if config.config["mihoyobbs"]["enable"]:
             login.login()
-            time.sleep(random.randint(2, 8))
+            time.sleep(random.randint(1, 2))
         # 整理 cookie，在字段重复时优先使用最后出现的值
         config.config["account"]["cookie"] = tools.tidy_cookie(config.config["account"]["cookie"])
     # 米游社签到
